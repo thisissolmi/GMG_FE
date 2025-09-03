@@ -65,28 +65,97 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --font-pretendard: "Pretendard", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  /* Primary */
+  --primary: #1D8B56;
+
+  /* Secondary */
+  --secondary: #EFE8E1;
+
+  /* Neutral */
+  --neutral: #EFE8E1;
+
+  /* Impact */
+  --impact: #A52101;
+
+  /* Background */
+  --background: #FFC200;
+
+  /* Text */
+  --text: #51493F;
+
+  /* Font Stacks */
+  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
 
-  --font-sans: var(--font-pretendard);
-  --font-mono: var(--font-geist-mono);
+.headline-b-40{
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 43px;
+  letter-spacing: -0.408px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.headline-b-25{
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 30px;
+  letter-spacing: -0.408px;
+}
+
+.headline-b-20{
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 43px;
+  letter-spacing: -0.408px;
+}
+
+.body-30 {
+  font-family: var(--font-pretendard);
+}
+
+/* Tailwind CSS utilities will automatically use CSS variables */
+
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
+  margin: 0;
+  padding: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-pretendard);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 1280x720 고정 크기 설정 */
+html, body {
+  width: 1280px;
+  height: 720px;
+  max-width: 1280px;
+  max-height: 720px;
+  overflow: hidden; /* 스크롤 방지 */
+  margin: 0 auto; /* 중앙 정렬 */
+}
+
+#__next {
+  width: 100%;
+  height: 100%;
+  max-width: 1280px;
+  max-height: 720px;
 }

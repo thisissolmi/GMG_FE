@@ -1,0 +1,173 @@
+/* Header 컴포넌트 전용 스타일 */
+
+/* 로그인된 상태의 헤더 */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  padding: 1rem 1.5rem;
+}
+
+/* 로그인되지 않은 상태의 헤더 */
+.headerLoggedOut {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 77px;
+  z-index: 50;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 로고 영역 */
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #eab308; /* yellow-500 */
+}
+
+.loggedOutLogo {
+    font-size: 1.5rem;
+  font-weight: bold;
+  color: #eab308; /* yellow-500 */
+}
+
+/* 우측 아이콘 영역 */
+.iconContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconButton {
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+/* 사용자 아이콘 */
+.userIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #eab308; /* yellow-500 */
+}
+
+/* 햄버거 메뉴 아이콘 */
+.menuIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #374151; /* gray-700 */
+}
+
+/* 드롭다운 메뉴 */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 1.5rem;
+  margin-top: 0.5rem;
+  width: 12rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.nav {
+  padding: 0.5rem 0;
+}
+
+.navLink {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #374151; /* gray-700 */
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.navLink:hover {
+  background-color: #f9fafb; /* gray-50 */
+}
+
+.navLink.logout {
+  color: #dc2626; /* red-600 */
+}
+
+.divider {
+  margin: 0.5rem 0;
+  border: none;
+  border-top: 1px solid #e5e7eb; /* gray-200 */
+}
+
+/* 로그인 버튼 영역 (로그인되지 않은 상태) */
+.loginButtonContainer {
+  padding-right: 66px;
+}
+
+.loginButton {
+  color: #FFF; /* gray-700 */
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.loginButton:hover {
+  color: #eab308; /* yellow-500 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .headerLoggedOut {
+    height: 60px;
+  }
+  
+  .containerLoggedOut {
+    padding: 0 1rem;
+  }
+  
+  .loginButtonContainer {
+    padding-right: 20px;
+  }
+  
+  .logo {
+    font-size: 1.25rem;
+  }
+  
+  .iconContainer {
+    gap: 0.75rem;
+  }
+  
+  .dropdown {
+    right: 1rem;
+    width: 10rem;
+  }
+}
