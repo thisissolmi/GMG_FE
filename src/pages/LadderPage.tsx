@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-// 쿼리 → 문자열 배열로 안전 파싱
 function parseAreas(query: unknown): string[] {
   let raw = "";
   if (Array.isArray(query)) {
@@ -32,7 +31,6 @@ export default function LadderPage() {
   const [items, setItems] = useState<string[]>([]);
   const [result, setResult] = useState<string[]>([]);
 
-  // ✅ 쿼리 파싱 안정화
   useEffect(() => {
     if (!router.isReady) return;
     const list = parseAreas(router.query.areas);
@@ -85,7 +83,6 @@ export default function LadderPage() {
           </div>
         ) : (
           <>
-            {/* 간단 매칭 테이블 (왼쪽 원본 → 오른쪽 결과) */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border border-gray-200 rounded-xl overflow-hidden">
                 <thead className="bg-gray-50">
@@ -107,7 +104,6 @@ export default function LadderPage() {
               </table>
             </div>
 
-            {/* 액션 */}
             <div className="mt-6 flex items-center gap-3">
               <button
                 onClick={reshuffle}
