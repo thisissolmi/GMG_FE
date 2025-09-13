@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Link from "next/link"; // Next.js Link 컴포넌트 import
 import styles from "./Header.module.css";
 
 interface HeaderProps {
@@ -19,9 +20,9 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
 
           {/* 우측 로그인 버튼 */}
           <div className={styles.loginButtonContainer}>
-            <a href="/LoginPage" className={styles.loginButton}>
+            <Link href="/LoginPage" className={styles.loginButton}>
               로그인
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -78,22 +79,22 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
       {isMenuOpen && (
         <div className={styles.dropdown}>
           <nav className={styles.nav}>
-            <a href="/schedule" className={styles.navLink}>
+            <Link href="/schedule" className={styles.navLink}>
               일정 관리
-            </a>
-            <a href="/favorites" className={styles.navLink}>
+            </Link>
+            <Link href="/favorites" className={styles.navLink}>
               즐겨찾기
-            </a>
-            <a href="/history" className={styles.navLink}>
+            </Link>
+            <Link href="/history" className={styles.navLink}>
               여행 기록
-            </a>
-            <a href="/settings" className={styles.navLink}>
+            </Link>
+            <Link href="/settings" className={styles.navLink}>
               설정
-            </a>
+            </Link>
             <hr className={styles.divider} />
-            <a href="/logout" className={`${styles.navLink} ${styles.logout}`}>
+            <Link href="/logout" className={`${styles.navLink} ${styles.logout}`}>
               로그아웃
-            </a>
+            </Link>
           </nav>
         </div>
       )}
