@@ -12,7 +12,6 @@ export default function GameMode() {
 };
 
 
-
   return (
     <main className="min-h-screen w-full bg-yellow-400/90 flex items-center justify-center p-6">
       <section className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6">
