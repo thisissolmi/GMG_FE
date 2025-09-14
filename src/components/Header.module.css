@@ -2,24 +2,14 @@
 
 /* 로그인된 상태의 헤더 */
 .header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   background-color: white;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  z-index: 50;
   padding: 1rem 1.5rem;
+  border-bottom: 1px solid #EAEAEA;
 }
 
 /* 로그인되지 않은 상태의 헤더 */
 .headerLoggedOut {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 77px;
-  z-index: 50;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;

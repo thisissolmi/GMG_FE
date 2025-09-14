@@ -19,11 +19,11 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <>
+    <div className="grid grid-rows-[auto_1fr] min-h-screen">
       <Header isLoggedIn={isLoggedIn} />
-      <main className="pt-20">
+      <main>
         <Component {...pageProps} />
       </main>
-    </>
+    </div>
   );
 }
