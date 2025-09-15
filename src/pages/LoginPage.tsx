@@ -1,14 +1,19 @@
+import Image from 'next/image';
+
+
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 relative">
      
       <div className="max-w-md w-full space-y-8">
         <div>
-          <img
-            className="mx-auto h-20 w-auto"
-            src="/yellologo.png"
-            alt="Logo"
-          />
+            <Image
+              className="mx-auto h-20 w-auto"
+              src="/yellologo.png"
+              alt="Logo"
+              width={80} 
+              height={80} 
+            />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             로그인
           </h2>
