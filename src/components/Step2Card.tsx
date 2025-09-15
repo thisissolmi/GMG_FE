@@ -1,6 +1,8 @@
 "use client";
 
 import styles from "./Step2Card.module.css";
+import Image from 'next/image';
+
 
 interface Step2CardProps {
     onNext?: () => void;
@@ -44,16 +46,20 @@ export default function Step2Card({ onNext, onPrev, tripDays, setTripDays }: Ste
             </div>
 
             <div className={styles.imgContainer}>
-                <img
+                <Image
                     src="/leftArrow.svg"
                     alt="leftArrow"
                     onClick={onPrev}
-                />
-                <img
+                    width={24}
+                    height={24}
+                    />
+                <Image
                     src="/rightArrow.svg"
                     alt="arrowRight"
                     onClick={handleNext}
-                />
+                    width={24}
+                    height={24}
+                    />
             </div>
         </div>
     );

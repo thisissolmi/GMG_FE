@@ -1,7 +1,9 @@
 "use client";
 
 import styles from "./Step3Card.module.css";
-import { useState } from "react";
+import Image from 'next/image';
+
+// import { useState } from "react";
 
 interface Step3CardProps {
     onPrev?: () => void;
@@ -48,16 +50,20 @@ export default function Step3Card({ onPrev, onNext, tripStyle, setTripStyle }: S
                 </button>
             </div>
             
-            <div className={styles.imgContainer}>
-                <img
-                    src="/leftArrow.svg"
-                    alt="leftArrow"
-                    onClick={onPrev}
+            <div className={styles.imgContainer}> 
+                <Image
+                src="/leftArrow.svg"
+                alt="leftArrow"
+                onClick={onPrev}
+                width={24}
+                height={24}
                 />
-                <img
-                    src="/rightArrow.svg"
-                    alt="arrowRight"
-                    onClick={handleNext}
+                <Image
+                src="/rightArrow.svg"
+                alt="arrowRight"
+                onClick={handleNext}
+                width={24}
+                height={24}
                 />
             </div>
         </div>

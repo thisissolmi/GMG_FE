@@ -1,7 +1,8 @@
 "use client";
 
 import styles from "./Step1Card.module.css";
-import { useState } from "react";
+import Image from 'next/image';
+// import { useState } from "react";
 
 interface Step1CardProps {
     onNext?: () => void;
@@ -34,11 +35,13 @@ export default function Step1Card({ onNext, tripName, setTripName }: Step1CardPr
                 />
             </div>
             <div className={styles.imgContainer}>
-                <img
-                    src="/rightArrow.svg"
-                    alt="arrowRight"
-                    onClick={handleNext}
-                    style={{ cursor: 'pointer' }}
+                <Image
+                src="/rightArrow.svg"
+                alt="arrowRight"
+                onClick={handleNext}
+                style={{ cursor: 'pointer' }}
+                width={24} // 이미지의 실제 너비
+                height={24} // 이미지의 실제 높이
                 />
             </div>
         </div>
