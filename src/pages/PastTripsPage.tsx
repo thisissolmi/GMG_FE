@@ -9,6 +9,7 @@ interface TripData {
     title: string;
     destination: string;
     date: string;
+    rating: number;
     itinerary: {
         day: number;
         places: string[];
@@ -18,13 +19,14 @@ interface TripData {
 export default function PastTripsPage() {
     const router = useRouter();
     
-    // 예정된 여행 데이터
+    // 다녀온 여행 데이터
     const [trips] = useState<TripData[]>([
         {
             id: 1,
             title: "여행이름1",
-            destination: "seoul",
+            destination: "서울특별시 용산구",
             date: "2025. 8. 13.",
+            rating: 4.5,
             itinerary: [
                 {
                     day: 1,
@@ -39,8 +41,9 @@ export default function PastTripsPage() {
         {
             id: 2,
             title: "여행이름2",
-            destination: "korea",
+            destination: "서울특별시 서대문구",
             date: "2025. 8. 25.",
+            rating: 4.5,
             itinerary: [
                 {
                     day: 1,
@@ -55,8 +58,9 @@ export default function PastTripsPage() {
         {
             id: 3,
             title: "여행이름3",
-            destination: "just",
+            destination: "경북 포항시 북구",
             date: "2025. 9. 3.",
+            rating: 4.5,
             itinerary: [
                 {
                     day: 1,
@@ -65,38 +69,6 @@ export default function PastTripsPage() {
                 {
                     day: 2,
                     places: ["창덕궁", "혜화극장", "효성주얼리시티쇼핑몰", "롯데시티호텔 명동"]
-                }
-            ]
-        },
-        {
-            id: 4,
-            title: "여행이름4",
-            destination: "one bite",
-            date: "2025. 10. 15.",
-            itinerary: [
-                {
-                    day: 1,
-                    places: ["부산역", "해운대해수욕장", "광안리해수욕장", "부산타워", "남포동"]
-                },
-                {
-                    day: 2,
-                    places: ["감천문화마을", "자갈치시장", "부산아쿠아리움", "송도해수욕장"]
-                }
-            ]
-        },
-        {
-            id: 5,
-            title: "여행이름5",
-            destination: "Jeju",
-            date: "2025. 11. 20.",
-            itinerary: [
-                {
-                    day: 1,
-                    places: ["제주공항", "성산일출봉", "섭지코지", "제주올레길", "제주시내"]
-                },
-                {
-                    day: 2,
-                    places: ["한라산", "중문관광단지", "천지연폭포", "제주민속촌"]
                 }
             ]
         }
@@ -118,7 +90,7 @@ export default function PastTripsPage() {
     return (
         <div className={`${styles.container} w-full md:pl-[14.25rem] md:pr-[14.1875rem] m-0`}>
             <div className={`${styles.header} md:pt-[2.5rem] md:pb-[1.875rem]`}>
-                <h1 className={styles.title}>예정된 여행</h1>
+                <h1 className={styles.title}>다녀온 여행</h1>
             </div>
             
             <div className={`${styles.tripsList} md:pl-[1.75rem] md:pr-[1.44rem]`}>
@@ -131,6 +103,13 @@ export default function PastTripsPage() {
                         <div className={`${styles.tripHeader} mb-[15px] gap-[15px]`}>
                             <div className={styles.tripTitle}>{trip.title}</div>
                             <div className={styles.tripDestination}>{trip.destination}</div>
+                            <div className={styles.ratingContainer}>
+                                <img src="/star.svg" alt="star" className={styles.starIcon} />
+                                <span className={styles.rating}>{trip.rating}</span>
+                                <svg className={styles.ratingArrow} width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M6 12L10 8L6 4" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </div>
                             <div className={styles.tripDate}>{trip.date}</div>
                         </div>
                         
