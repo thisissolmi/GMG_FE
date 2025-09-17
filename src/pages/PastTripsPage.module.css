@@ -1,0 +1,161 @@
+body {
+    background-color: white;
+}
+
+.container {
+    height: 39.56rem;
+    background-color: white;
+    font-family: var(--font-pretendard);
+    /* 높이는 Tailwind CSS로 관리 */
+}
+
+.header {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.title {
+    font-size: 25px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+}
+
+.tripsList {
+    max-height: calc(100vh - 10rem); /* 동적 높이 계산 */
+    overflow-y: auto;
+    /* 스크롤바 스타일링 */
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+}
+
+.tripCard {
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.tripCard:hover {
+    background-color: #f9f9f9;
+}
+
+.tripCard:last-child {
+    margin-bottom: 26.24px;
+    border-bottom: none;
+}
+
+.tripHeader {
+    display: flex;
+    align-items: center;
+}
+
+.tripTitle {
+    font-size: 25px;
+    font-weight: 700;
+    color: #000;
+}
+
+.tripDestination {
+    font-size: 20px;
+    color: #000;
+    position: relative;
+    font-weight: 600;
+    padding-left: 15px;
+}
+
+.tripDestination::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 24px;
+    background-color: #D0D0D0;
+}
+
+.ratingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    margin-right: auto;
+}
+
+.starIcon {
+    width: 16px;
+    height: 16px;
+}
+
+.rating {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.ratingArrow {
+    width: 16px;
+    height: 16px;
+    margin-left: 0.25rem;
+}
+
+.tripDate {
+    font-size: 14px;
+    color: #000;
+}
+
+.tripContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+}
+
+.itinerary {
+    flex: 1;
+}
+
+.dayItinerary {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-bottom: 8px;
+}
+
+.dayItinerary:last-child {
+    margin-bottom: 0;
+}
+
+.dayLabel {
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.places {
+    font-size: 17px;
+    color: #808080;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.moreIndicator {
+    font-size: 17px;
+    color: #999;
+    margin-top: 4px;
+}
+
+.arrowButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}

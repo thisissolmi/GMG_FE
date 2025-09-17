@@ -1,0 +1,199 @@
+/* 모달 스타일 */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    width: 542px;
+    height: 521px;
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #E5E5E5;
+    background-color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.tripInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tripName {
+    color: #000;
+    font-family: Pretendard;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.separator {
+    width: 1px;
+    height: 16px;
+    background-color: #D0D0D0;
+}
+
+.tripLocation {
+    color: #000;
+    font-family: Pretendard;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.ratingSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+
+.ratingStars {
+    display: flex;
+    gap: 2px;
+}
+
+.headerStar {
+    width: 22px;
+    height: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    background-image: url('/emptyStar.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.headerStar:hover {
+    transform: scale(1.1);
+}
+
+.headerStarActive {
+    background-image: url('/star.svg');
+}
+
+.modalCloseButton {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.modalCloseButton:hover {
+    color: #666;
+}
+
+.modalBody {
+    flex: 1;
+    padding: 32px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+}
+
+.formLabel {
+    font-family: Pretendard;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    flex-shrink: 0;
+}
+
+.formTextarea {
+    padding: 16px 20px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    font-family: Pretendard;
+    font-size: 16px;
+    outline: none;
+    resize: none;
+    flex: 1;
+    min-height: 0;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+    overflow-y: auto;
+}
+
+.formTextarea:focus {
+    border-color: #4F46E5;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: center;
+    padding: 24px 32px;
+    border-top: 1px solid #E5E5E5;
+}
+
+.submitButton {
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 8px;
+    background-color: #FFC200;
+    color: white;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+    background-color: #E6B000;
+}

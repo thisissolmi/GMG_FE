@@ -1,0 +1,234 @@
+/* Modal Overlay */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 542px;
+    height: 521px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+/* Modal Header */
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #E5E5E5;
+    flex-shrink: 0;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.tripInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tripName {
+    color: #000;
+    font-family: Pretendard;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.separator {
+    width: 1px;
+    height: 16px;
+    background-color: #D0D0D0;
+}
+
+.tripLocation {
+    color: #000;
+    font-family: Pretendard;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.ratingSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.ratingStars {
+    display: flex;
+    gap: 2px;
+}
+
+.headerStar {
+    width: 22px;
+    height: 20px;
+    background-image: url('/emptyStar.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.headerStarActive {
+    background-image: url('/star.svg');
+}
+
+.modalCloseButton {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.modalCloseButton:hover {
+    color: #666;
+}
+
+/* Modal Body */
+.modalBody {
+    flex: 1;
+    padding: 32px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+}
+
+.reviewInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #E5E5E5;
+    flex-shrink: 0;
+}
+
+.userName {
+    color: #333;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.reviewDate {
+    color: #666;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.reviewContent {
+    padding: 16px 20px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    font-family: Pretendard;
+    font-size: 16px;
+    line-height: 1.5;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    background-color: #FAFAFA;
+    color: #333;
+}
+
+/* Modal Footer */
+.modalFooter {
+    display: flex;
+    justify-content: center;
+    padding: 24px 32px;
+    border-top: 1px solid #E5E5E5;
+    flex-shrink: 0;
+}
+
+.closeButton {
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 8px;
+    background-color: #6B7280;
+    color: white;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+    background-color: #4B5563;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modalContent {
+        width: 90vw;
+        height: 80vh;
+        margin: 20px;
+    }
+    
+    .modalHeader {
+        padding: 16px 20px;
+    }
+    
+    .modalBody {
+        padding: 24px 20px;
+    }
+    
+    .modalFooter {
+        padding: 20px;
+    }
+    
+    .tripName {
+        font-size: 18px;
+    }
+    
+    .tripLocation {
+        font-size: 14px;
+    }
+}

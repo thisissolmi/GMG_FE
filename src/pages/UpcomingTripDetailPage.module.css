@@ -1,0 +1,699 @@
+body {
+    background-color: white;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    flex: 1;
+    gap: 1rem;
+    font-family: var(--font-pretendard);
+}
+
+.summaryContainer {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+}
+
+.titleContainer {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-bottom: 1.87rem;
+}
+
+.titleContainer h1 {
+    font-family: var(--font-pretendard);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: normal;
+    color: #000;
+}
+
+.travelPlanHeaderContainer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 1.38rem;
+}
+
+.travelHeaderInfoContainer {
+    display: flex;
+    align-items: center;
+    gap: 1.06rem;
+    width: 13.81rem;
+}
+
+.travelName {
+    font-family: var(--font-pretendard);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: normal;
+    color: #000;
+}
+
+.strokeSeparator {
+    width: 1px;
+    height: 1.06rem;
+    background-color: #D0D0D0;
+}
+
+.travelDestination {
+    font-family: var(--font-pretendard);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: normal;
+    color: #000;
+}
+
+.editButton {
+    font-family: var(--font-pretendard);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: normal;
+    color: #808080;
+
+    border: none;
+    border-radius: 15px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.editButton:hover {
+    background-color: #e9ecef;
+}
+
+
+/* 좌측 일정 영역 */
+.summaryContentContainer {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+}
+
+/* Day 탭 */
+.dayTabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.dayTab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    flex: 1;
+    width: 25%;
+}
+
+.dayTab:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.dayTab.active {
+    background-color: #f8f9fa;
+    color: #333;
+    border-bottom-color: #333;
+}
+
+/* 일정 아이템들 */
+.itineraryItems {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 55%;
+}
+
+.itineraryItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.31rem;
+    padding: 1rem;
+    border-bottom: 1px solid #EAEAEA;
+    background-color: #fff;
+    transition: box-shadow 0.2s ease;
+}
+
+.itineraryItem:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.itineraryItem:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+.departureItemContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #fff;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.reorderIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: grab;
+}
+
+.itemContent {
+    flex: 1;
+}
+
+/* 출발 아이템 */
+.departureItem {
+    display: flex;
+    align-items: center;
+    gap: 1.31rem;
+}
+
+.departureLabel {
+    color: #FFC200;
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.departureName {
+    color: #000;
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+/* 장소 아이템 */
+.placeItem {
+    display: flex;
+    gap: 1.31rem;
+}
+
+.placeImage {
+    width: 6.7rem;
+    height: 7rem;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.imagePlaceholder {
+    font-size: 1.5rem;
+}
+
+.placeDetails {
+    flex: 1;
+}
+
+.placeName {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.placeStatus {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.status {
+    color: #4E4E4E;
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.time {
+    color: #626262;
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.distance {
+    color: #B1B1B1;
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.reviews {
+    color: #626262;
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.reviews:hover {
+    text-decoration: underline;
+}
+
+.description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.expandIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* 우측 지도 영역 */
+.mapSection {
+    width: 50%;
+    height: 90%;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.mapContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.mapPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mapContent {
+    text-align: center;
+    color: #666;
+}
+
+.mapContent h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.mapContent p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.mapIcons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.mapIcon {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.routeLine {
+    position: absolute;
+    top: 30%;
+    left: 20%;
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, #4caf50 0%, #8bc34a 50%, #4caf50 100%);
+    border-radius: 2px;
+    opacity: 0.8;
+}
+
+.routeLine::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #4caf50;
+    border-radius: 50%;
+}
+
+.routeLine::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #4caf50;
+    border-radius: 50%;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .mainContent {
+        flex-direction: column;
+    }
+
+    .itinerarySection {
+        border-right: none;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .mapSection {
+        height: 300px;
+    }
+}
+
+.expandedDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.expandedContent {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.detailsText {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    flex: 1;
+}
+
+.statusAndDistance {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.statusOnly {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.reviewsAndDescription {
+    display: flex;
+    flex-direction: column;
+    gap: 0.19rem;
+}
+
+/* 커스텀 오버레이 스타일 */
+.customOverlay {
+    position: relative;
+    bottom: 85px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ddd;
+    background-color: #fff;
+    width: 200px;
+    height: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.customOverlay .info {
+    padding: 0;
+    margin: 0;
+    width: 200px;
+    height: auto;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.customOverlay .title {
+    padding: 5px 0 5px 10px;
+    height: 30px;
+    background: #eee;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.customOverlay .close {
+    width: 17px;
+    height: 17px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>') no-repeat;
+    background-size: contain;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.customOverlay .body {
+    position: relative;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.customOverlay .img {
+    float: left;
+    width: 73px;
+    height: 70px;
+    margin-right: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.customOverlay .img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.customOverlay .desc {
+    float: left;
+    width: calc(100% - 90px);
+}
+
+.customOverlay .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.customOverlay .jibun {
+    color: #999;
+    font-size: 11px;
+}
+
+.customOverlay .link {
+    color: #5085BB;
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.customOverlay .link:hover {
+    text-decoration: underline;
+}
+
+/* 새로운 커스텀 오버레이 스타일 (참고 이미지 스타일) */
+.simpleOverlay {
+    position: relative;
+    bottom: 85px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ddd;
+    float: left;
+    box-shadow: 0px 1px 2px #888;
+}
+
+.simpleOverlay a {
+    display: block;
+    text-decoration: none;
+    color: #000;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    overflow: hidden;
+    background: #d95050;
+    background: #d95050 url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png') no-repeat right 14px center;
+}
+
+.simpleOverlay .title {
+    display: block;
+    text-align: center;
+    background: #fff;
+    margin-right: 35px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.simpleOverlay:after {
+    content: '';
+    position: absolute;
+    margin-left: -12px;
+    left: 50%;
+    bottom: -12px;
+    width: 22px;
+    height: 12px;
+    background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png');
+}
+
+/* 투명한 hover 영역 */
+.hoverArea {
+    width: 80px;
+    height: 80px;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    /* 디버깅용 (개발 시에만 사용) */
+    /* background: rgba(255, 0, 0, 0.1); */
+}
+
+/* 클릭 가능한 오버레이 스타일 (참고 코드 기반) */
+.clickableOverlay {
+    position: relative;
+    bottom: 85px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ddd;
+    float: left;
+    box-shadow: 0px 1px 2px #888;
+    width: 320px;
+    min-height: 120px;
+}
+
+.clickableOverlay .wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.clickableOverlay .info {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border-bottom: 2px solid #ccc;
+    border-right: 1px solid #ccc;
+    overflow: hidden;
+    background: #fff;
+}
+
+.clickableOverlay .title {
+    padding: 8px 0 8px 12px;
+    height: 40px;
+    background: #eee;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.clickableOverlay .close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: #888;
+    width: 20px;
+    height: 20px;
+    background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png');
+    background-size: contain;
+    cursor: pointer;
+}
+
+.clickableOverlay .close:hover {
+    background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close_on.png');
+}
+
+.clickableOverlay .body {
+    position: relative;
+    overflow: hidden;
+    padding: 12px;
+    min-height: 80px;
+}
+
+.clickableOverlay .img {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ddd;
+    color: #888;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.clickableOverlay .img img {
+    width: 100%;
+    height: 100%;
+}
+
+.clickableOverlay .desc {
+    float: right;
+    width: 200px;
+    height: 80px;
+    color: #555;
+    padding-left: 8px;
+}
+
+.clickableOverlay .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.clickableOverlay .jibun {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.clickableOverlay .link {
+    color: #5085BB;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.clickableOverlay .link:hover {
+    text-decoration: underline;
+}

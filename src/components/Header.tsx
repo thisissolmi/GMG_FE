@@ -12,22 +12,22 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ isLoggedIn = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // 로그인되지 않은 상태의 헤더
-  if (!isLoggedIn) {
-    return (
-      <header className={styles.headerLoggedOut}>
-        <div className={styles.containerLoggedOut}>
-          {/* 우측 로그인 버튼 */}
-          <div className={styles.loginButtonContainer}>
-            {/* ⬇️ <a> → <Link> */}
-            <Link href="/LoginPage" className={styles.loginButton}>
-              로그인
-            </Link>
-          </div>
-        </div>
-      </header>
-    );
-  }
+  // // 로그인되지 않은 상태의 헤더
+  // if (!isLoggedIn) {
+  //   return (
+  //     <header className={styles.headerLoggedOut}>
+  //       <div className={styles.containerLoggedOut}>
+
+  //         {/* 우측 로그인 버튼 */}
+  //         <div className={styles.loginButtonContainer}>
+  //           <a href="/LoginPage" className={styles.loginButton}>
+  //             로그인
+  //           </a>
+  //         </div>
+  //       </div>
+  //     </header>
+  //   );
+  // }
 
   // 로그인된 상태의 헤더
   return (
