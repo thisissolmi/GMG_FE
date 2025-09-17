@@ -564,3 +564,4 @@ export default function PastTripDetailPage() {
         </div>
     );
 }
+
