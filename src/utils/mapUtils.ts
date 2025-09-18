@@ -7,6 +7,8 @@ export interface Place {
     lat: number;
     lng: number;
     type: 'departure' | 'place';
+    image?: string;
+    description?: string;
 }
 
 // 좌표 타입 정의
@@ -79,7 +81,9 @@ export const convertToMapPlaces = (items: any[]): Place[] => {
             name: item.name,
             lat: item.lat,
             lng: item.lng,
-            type: item.type
+            type: item.type,
+            image: item.image,
+            description: item.description
         }));
 };
 
