@@ -12,30 +12,45 @@ import {
 } from "@/utils/mapUtils";
 import ReviewWriteModal from "@/components/ReviewWriteModal";
 import ReviewViewModal from "@/components/ReviewViewModal";
+import { getCurrentPosition, calculateDistanceToPlace } from "@/utils/geolocation";
+import { getSampleTripData, type TripDetailData } from "@/data/sampleTripData";
 
-// 여행 상세 데이터 타입 정의
-interface TripDetailData {
-    id: number;
+// 백엔드 API 응답 타입 정의
+interface TripDetailResponse {
+    tripId: number;
     title: string;
-    destination: string;
-    date: string;
-    days: {
+    days: number;
+    user: {
+        userId: number;
+        email: string;
+        name: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    tripContents: {
         day: number;
-        items: {
-            id: number;
-            type: 'departure' | 'place';
-            name: string;
-            time?: string;
-            status?: string;
-            distance?: string;
-            reviews?: number;
-            image?: string;
-            description?: string;
-            lat?: number;
-            lng?: number;
+        contents: {
+            tripContentId: number;
+            sequence: number;
+            content: {
+                contentId: string;
+                title: string;
+                addr: string;
+                tel: string;
+                zipcode: string;
+                firstImage: string;
+                firstImage2: string;
+                contentTypeId: string;
+                areaCode: string;
+                sigunguCode: string;
+                mapX: string;
+                mapY: string;
+            };
         }[];
     }[];
 }
+
+// TripDetailData는 sampleTripData.ts에서 import
 
 export default function PastTripDetailPage() {
     const searchParams = useSearchParams();
@@ -46,8 +61,86 @@ export default function PastTripDetailPage() {
     const [clickedMarker, setClickedMarker] = useState<number | null>(null);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isReviewViewModalOpen, setIsReviewViewModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
 
     useKakaoLoader();
+
+    // 현재 위치를 가져오는 함수
+    const getCurrentLocation = async () => {
+        try {
+            const position = await getCurrentPosition();
+            setCurrentLocation({
+                lat: position.latitude,
+                lng: position.longitude
+            });
+        } catch (error) {
+            console.warn('현재 위치를 가져올 수 없습니다:', error);
+        }
+    };
+
+
+    // 백엔드에서 여행 상세 정보를 가져오는 함수
+    const fetchTripDetail = async (tripId: number) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            const response = await fetch(`/api/trips/me/planned/${tripId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`여행 상세 정보를 불러오는데 실패했습니다. (${response.status}: ${response.statusText})`);
+            }
+
+            const tripDetailResponse: TripDetailResponse = await response.json();
+
+            // 백엔드 응답을 프론트엔드 형식으로 변환
+            const convertedTripData: TripDetailData = {
+                id: tripDetailResponse.tripId,
+                title: tripDetailResponse.title,
+                destination: "서울", // TODO: 백엔드에서 destination 정보 추가 필요
+                date: new Date(tripDetailResponse.createdAt).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                days: tripDetailResponse.tripContents.map(dayContent => ({
+                    day: dayContent.day,
+                    items: dayContent.contents.map((tripContent, index) => ({
+                        id: tripContent.tripContentId,
+                        type: index === 0 ? 'departure' as const : 'place' as const,
+                        name: tripContent.content.title,
+                        lat: parseFloat(tripContent.content.mapY) || 37.5665,
+                        lng: parseFloat(tripContent.content.mapX) || 126.9780,
+                        mapX: tripContent.content.mapX,
+                        mapY: tripContent.content.mapY,
+                        image: tripContent.content.firstImage || tripContent.content.firstImage2 || undefined,
+                        description: tripContent.content.addr || `${tripContent.content.title}에 대한 설명입니다.`,
+                        tel: tripContent.content.tel || undefined,
+                        reviews: 859
+                    }))
+                })).sort((a, b) => a.day - b.day)
+            };
+
+            setTripData(convertedTripData);
+
+        } catch (error) {
+            console.error('여행 상세 정보 조회 오류:', error);
+            console.log('API 호출 실패로 예시 데이터를 사용합니다.');
+            
+            // API 호출 실패 시 예시 데이터 사용
+            const sampleTripData = getSampleTripData(tripId);
+            setTripData(sampleTripData);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     // 마커 클릭 핸들러
     const handleMarkerClick = (placeId: number) => {
@@ -57,6 +150,33 @@ export default function PastTripDetailPage() {
     // 오버레이 닫기 함수
     const closeOverlay = () => {
         setClickedMarker(null);
+    };
+
+    // 거리 계산 함수
+    const calculateItemDistance = (item: any): string => {
+        if (!currentLocation) {
+            return '내 위치에서 143m'; // 기본값
+        }
+        
+        // 백엔드에서 받은 원본 데이터에서 mapX, mapY 사용
+        const placeMapX = item.mapX || item.lng;
+        const placeMapY = item.mapY || item.lat;
+        
+        if (!placeMapX || !placeMapY) {
+            return '내 위치에서 143m'; // 기본값
+        }
+        
+        try {
+            return calculateDistanceToPlace(
+                currentLocation.lat,
+                currentLocation.lng,
+                placeMapX,
+                placeMapY
+            );
+        } catch (error) {
+            console.warn('거리 계산 실패:', error);
+            return '내 위치에서 143m'; // 기본값
+        }
     };
 
     // 모달 열기/닫기 함수
@@ -145,169 +265,23 @@ export default function PastTripDetailPage() {
         setDraggedItem(null);
     };
 
-    // URL 쿼리 파라미터에서 여행 정보 받기
+    // URL 쿼리 파라미터에서 여행 ID 받아서 API 호출
     useEffect(() => {
         const id = searchParams.get('id');
-        const title = searchParams.get('title');
-        const destination = searchParams.get('destination');
-        const date = searchParams.get('date');
 
-        if (id && title && destination && date) {
-            // 실제 프로젝트에서는 API 호출로 상세 데이터 가져오기
-            const tripDetailData: TripDetailData = {
-                id: parseInt(id),
-                title: decodeURIComponent(title),
-                destination: decodeURIComponent(destination),
-                date: decodeURIComponent(date),
-                days: getTripDetailDays(parseInt(id)) // ID에 따른 상세 일정 데이터
-            };
-
-            setTripData(tripDetailData);
+        if (id) {
+            fetchTripDetail(parseInt(id));
         } else {
-            console.error('필수 파라미터가 누락되었습니다:', { id, title, destination, date });
+            console.error('여행 ID가 누락되었습니다.');
+            setError('여행 ID가 필요합니다.');
+            setIsLoading(false);
         }
     }, [searchParams]);
 
-    // ID에 따른 상세 일정 데이터 반환 (실제로는 API에서 가져옴)
-    const getTripDetailDays = (tripId: number) => {
-
-        const tripDetailsMap: { [key: number]: any[] } = {
-            1: [
-                {
-                    day: 1,
-                    items: [
-                        {
-                            id: 1,
-                            type: 'departure',
-                            name: '서울역',
-                            time: '09:00',
-                            lat: 37.555134,
-                            lng: 126.970701
-                        },
-                        {
-                            id: 2,
-                            type: 'place',
-                            name: '리키커피숍',
-                            time: '10:00',
-                            status: '영업 중',
-                            distance: '내 위치에서 143m',
-                            reviews: 859,
-                            image: '/cafe-image.jpg',
-                            description: '주소 전화번호 등 정보 어디까지 넣을 수 있는지용?',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 3,
-                            type: 'place',
-                            name: '덕수궁',
-                            time: '11:00',
-                            lat: 37.5658,
-                            lng: 126.9752
-                        },
-                        {
-                            id: 4,
-                            type: 'place',
-                            name: '경복궁',
-                            time: '12:00',
-                            lat: 37.5796,
-                            lng: 126.9770
-                        },
-                        {
-                            id: 5,
-                            type: 'place',
-                            name: '창덕궁',
-                            time: '13:00',
-                            lat: 37.5796,
-                            lng: 126.9910
-                        },
-                        {
-                            id: 6,
-                            type: 'place',
-                            name: '통인시장',
-                            time: '14:00',
-                            lat: 37.5800,
-                            lng: 126.9700
-                        }
-                    ]
-                },
-                {
-                    day: 2,
-                    items: [
-                        {
-                            id: 7,
-                            type: 'departure',
-                            name: '호텔',
-                            time: '09:00',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 8,
-                            type: 'place',
-                            name: '창덕궁',
-                            time: '10:00',
-                            lat: 37.5796,
-                            lng: 126.9910
-                        },
-                        {
-                            id: 9,
-                            type: 'place',
-                            name: '혜화극장',
-                            time: '14:00',
-                            lat: 37.5850,
-                            lng: 127.0010
-                        }
-                    ]
-                },
-                {
-                    day: 3,
-                    items: [
-                        {
-                            id: 10,
-                            type: 'departure',
-                            name: '출발 호텔',
-                            time: '09:00',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 11,
-                            type: 'place',
-                            name: '남산타워',
-                            time: '10:00',
-                            lat: 37.5512,
-                            lng: 126.9882
-                        }
-                    ]
-                },
-                {
-                    day: 4,
-                    items: [
-                        {
-                            id: 12,
-                            type: 'departure',
-                            name: '출발 호텔',
-                            time: '09:00',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 13,
-                            type: 'place',
-                            name: '명동',
-                            time: '10:00',
-                            lat: 37.5636,
-                            lng: 126.9826
-                        }
-                    ]
-                }
-            ]
-        };
-
-        const result = tripDetailsMap[tripId] || [];
-        return result;
-    };
+    // 컴포넌트 마운트 시 현재 위치 가져오기
+    useEffect(() => {
+        getCurrentLocation();
+    }, []);
 
     // 로딩 상태 처리
     if (!tripData) {
@@ -372,7 +346,7 @@ export default function PastTripDetailPage() {
                         {currentDayData?.items.map((item) => (
                             <div
                                 key={item.id}
-                                className={item.type === 'departure' ? styles.departureItemContainer : styles.itineraryItem}
+                                className={styles.itineraryItem}
                                 draggable={item.type !== 'departure'}
                                 onDragStart={(e) => item.type !== 'departure' && handleDragStart(e, item.id)}
                                 onDragOver={handleDragOver}
@@ -383,7 +357,9 @@ export default function PastTripDetailPage() {
                                     cursor: item.type !== 'departure' ? 'move' : 'default'
                                 }}
                             >
-                                {item.type !== 'departure' && (
+                                {item.type === 'departure' ? (
+                                    <div className={styles.departureLabel}>출발</div>
+                                ) : (
                                     <div className={styles.reorderIcon}>
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                             <path d="M2 4h12M2 8h12M2 12h12" stroke="#999" strokeWidth="2" strokeLinecap="round" />
@@ -392,49 +368,43 @@ export default function PastTripDetailPage() {
                                 )}
 
                                 <div className={styles.itemContent}>
-                                    {item.type === 'departure' ? (
-                                        <div className={styles.departureItem}>
-                                            <span className={styles.departureLabel}>출발</span>
-                                            <span className={styles.departureName}>{item.name}</span>
+                                    <div className={styles.placeItem}>
+                                        <div className={styles.placeDetails}>
+                                            <h3 className={styles.placeName}>{item.name}</h3>
                                         </div>
-                                    ) : (
-                                        <div className={styles.placeItem}>
-                                            <div className={styles.placeDetails}>
-                                                <h3 className={styles.placeName}>{item.name}</h3>
-                                                {expandedItems.has(item.id) && (
-                                                    <div className={styles.expandedDetails}>
-                                                        <div className={styles.expandedContent}>
-                                                            {expandedItems.has(item.id) && (
-                                                                <div className={styles.placeImage}>
-                                                                    <div className={styles.imagePlaceholder}>
-                                                                        📍
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                            <div className={styles.detailsText}>
-                                                                <div className={styles.statusAndDistance}>
-                                                                    {item.status && (
-                                                                        <div className={styles.statusOnly}>
-                                                                            <span className={styles.status}>{item.status}</span>
-                                                                            {item.time && <span className={styles.time}>{item.time} 까지</span>}
-                                                                        </div>
-                                                                    )}
-                                                                    {item.distance && (
-                                                                        <div className={styles.distance}>{item.distance}</div>
-                                                                    )}
-                                                                </div>
-                                                                <div className={styles.reviewsAndDescription}>
-                                                                    {item.reviews && (
-                                                                        <div className={styles.reviews}>후기 {item.reviews}</div>
-                                                                    )}
-                                                                    {item.description && (
-                                                                        <div className={styles.description}>{item.description}</div>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                    </div>
+
+                                    {/* 출발지와 관광지 모두에 대한 확장된 세부 정보 */}
+                                    {expandedItems.has(item.id) && (
+                                        <div className={styles.expandedDetails}>
+                                            <div className={styles.expandedContent}>
+                                                {item.image && (
+                                                    <div className={styles.placeImage}>
+                                                        <img
+                                                            src={item.image}
+                                                            alt={item.name}
+                                                            className={styles.placeImageContent}
+                                                        />
                                                     </div>
                                                 )}
+                                                <div className={styles.detailsText}>
+                                                    <div className={styles.statusAndDistance}>
+                                                        {item.tel && (
+                                                            <div className={styles.tel}>{item.tel}</div>
+                                                        )}
+                                                        <div className={styles.distance}>
+                                                            내 위치에서 {calculateItemDistance(item)}
+                                                        </div>
+                                                    </div>
+                                                    <div className={styles.reviewsAndDescription}>
+                                                        {item.reviews && (
+                                                            <div className={styles.reviews}>후기 {item.reviews}</div>
+                                                        )}
+                                                        {item.description && (
+                                                            <div className={styles.description}>{item.description}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -548,6 +518,13 @@ export default function PastTripDetailPage() {
                 isOpen={isReviewModalOpen}
                 onClose={closeReviewModal}
                 tripTitle={tripData?.title}
+                tripId={tripData?.id}
+                places={tripData?.days.flatMap(day => day.items.filter(item => item.type === 'place')).map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    type: item.type,
+                    contentId: item.contentId
+                })) || []}
             />
 
             {/* 여행 후기 보기 모달 */}
@@ -555,11 +532,12 @@ export default function PastTripDetailPage() {
                 isOpen={isReviewViewModalOpen}
                 onClose={closeReviewViewModal}
                 tripTitle={tripData?.title}
-                tripLocation={tripData?.destination}
-                placeRating={4} // TODO: 백엔드에서 실제 평점 데이터 가져오기
-                reviewContent="정말 즐거운 여행이었습니다! 서울의 명소들을 차근차근 둘러볼 수 있어서 좋았어요. 특히 경복궁과 한강공원이 인상적이었습니다. 다음에도 꼭 다시 가고 싶어요!" // TODO: 백엔드에서 실제 후기 내용 가져오기
-                reviewDate="2024.01.15" // TODO: 백엔드에서 실제 작성일 가져오기
-                userName="김여행" // TODO: 백엔드에서 실제 사용자명 가져오기
+                places={tripData?.days.flatMap(day => day.items.filter(item => item.type === 'place')).map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    type: item.type,
+                    contentId: item.contentId
+                })) || []}
             />
         </div>
     );
