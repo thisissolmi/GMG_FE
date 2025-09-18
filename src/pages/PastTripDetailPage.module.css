@@ -192,15 +192,6 @@ body {
     transition: transform 0.1s ease;
 }
 
-.departureItemContainer {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background-color: #fff;
-    border-bottom: 1px solid #EAEAEA;
-}
-
 .reorderIcon {
     display: flex;
     align-items: center;
@@ -222,6 +213,11 @@ body {
 }
 
 .departureLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
     color: #FFC200;
     font-size: 0.625rem;
     font-style: normal;
@@ -261,6 +257,9 @@ body {
 
 .placeDetails {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .placeName {
@@ -400,6 +399,7 @@ body {
     box-shadow: 0px 1px 2px #888;
     width: 320px;
     min-height: 120px;
+    cursor: pointer;
 }
 
 .clickableOverlay .wrap {
@@ -421,7 +421,7 @@ body {
 .clickableOverlay .title {
     padding: 8px 0 8px 12px;
     height: 40px;
-    background: #eee;
+    background: #ffc200;
     border-bottom: 1px solid #ddd;
     font-size: 16px;
     font-weight: bold;

@@ -4,12 +4,48 @@ import { useSearchParams } from "next/navigation";
 import styles from "./UpcomingTripDetailPage.module.css";
 import useKakaoLoader from "@/components/UseKaKaoLoader";
 import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
-import { 
-    calculateCenter, 
-    convertToMapPlaces, 
-    getMarkerImage, 
-    type Place 
+import {
+    calculateCenter,
+    convertToMapPlaces,
+    getMarkerImage,
+    type Place
 } from "@/utils/mapUtils";
+import { getCurrentPosition, calculateDistanceToPlace } from "@/utils/geolocation";
+
+// 백엔드 API 응답 타입 정의
+interface TripDetailResponse {
+    tripId: number;
+    title: string;
+    days: number;
+    user: {
+        userId: number;
+        email: string;
+        name: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+    tripContents: {
+        day: number;
+        contents: {
+            tripContentId: number;
+            sequence: number;
+            content: {
+                contentId: string;
+                title: string;
+                addr: string;
+                tel: string;
+                zipcode: string;
+                firstImage: string;
+                firstImage2: string;
+                contentTypeId: string;
+                areaCode: string;
+                sigunguCode: string;
+                mapX: string;
+                mapY: string;
+            };
+        }[];
+    }[];
+}
 
 // 여행 상세 데이터 타입 정의
 interface TripDetailData {
@@ -29,8 +65,11 @@ interface TripDetailData {
             reviews?: number;
             image?: string;
             description?: string;
+            tel?: string;
             lat?: number;
             lng?: number;
+            mapX?: string;
+            mapY?: string;
         }[];
     }[];
 }
@@ -43,8 +82,92 @@ export default function PastTripDetailPage() {
     const [draggedItem, setDraggedItem] = useState<number | null>(null);
     const [hoveredMarker, setHoveredMarker] = useState<number | null>(null);
     const [clickedMarker, setClickedMarker] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
 
     useKakaoLoader();
+
+    // 현재 위치를 가져오는 함수
+    const getCurrentLocation = async () => {
+        try {
+            const position = await getCurrentPosition();
+            setCurrentLocation({
+                lat: position.latitude,
+                lng: position.longitude
+            });
+        } catch (error) {
+            console.warn('현재 위치를 가져올 수 없습니다:', error);
+            // 위치를 가져올 수 없어도 에러로 처리하지 않음
+        }
+    };
+
+    // 백엔드에서 여행 상세 정보를 가져오는 함수
+    const fetchTripDetail = async (tripId: number) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            const response = await fetch(`/api/trips/me/planned/${tripId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`여행 상세 정보를 불러오는데 실패했습니다. (${response.status}: ${response.statusText})`);
+            }
+
+            const tripDetailResponse: TripDetailResponse = await response.json();
+
+            // 백엔드 응답을 프론트엔드 형식으로 변환
+            const convertedTripData: TripDetailData = {
+                id: tripDetailResponse.tripId,
+                title: tripDetailResponse.title,
+                destination: "서울", // TODO: 백엔드에서 destination 정보 추가 필요
+                date: new Date(tripDetailResponse.createdAt).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                days: tripDetailResponse.tripContents.map(dayContent => ({
+                    day: dayContent.day,
+                    items: dayContent.contents.map((tripContent, index) => ({
+                        id: tripContent.tripContentId,
+                        type: index === 0 ? 'departure' as const : 'place' as const,
+                        name: tripContent.content.title,
+                        time: `${9 + index}:00`, // 임시 시간 설정
+                        lat: parseFloat(tripContent.content.mapY) || 37.5665, // mapY를 lat로 사용
+                        lng: parseFloat(tripContent.content.mapX) || 126.9780, // mapX를 lng로 사용
+                        mapX: tripContent.content.mapX, // 원본 mapX 보존
+                        mapY: tripContent.content.mapY, // 원본 mapY 보존
+                        image: tripContent.content.firstImage || tripContent.content.firstImage2 || undefined,
+                        description: tripContent.content.addr || `${tripContent.content.title}에 대한 설명입니다.`,
+                        tel: tripContent.content.tel || undefined,
+                        reviews: 859 // 임시 리뷰 수
+                    }))
+                })).sort((a, b) => a.day - b.day)
+            };
+
+            setTripData(convertedTripData);
+
+        } catch (error) {
+            console.error('여행 상세 정보 조회 오류:', error);
+            setError(error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.');
+
+            // 에러 발생 시 기본 데이터 설정
+            setTripData({
+                id: tripId,
+                title: "여행 상세 정보",
+                destination: "서울",
+                date: new Date().toLocaleDateString('ko-KR'),
+                days: []
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     // 마커 클릭 핸들러
     const handleMarkerClick = (placeId: number) => {
@@ -124,176 +247,87 @@ export default function PastTripDetailPage() {
         setDraggedItem(null);
     };
 
-    // URL 쿼리 파라미터에서 여행 정보 받기
+    // URL 쿼리 파라미터에서 여행 ID 받아서 API 호출
     useEffect(() => {
         const id = searchParams.get('id');
-        const title = searchParams.get('title');
-        const destination = searchParams.get('destination');
-        const date = searchParams.get('date');
 
-        if (id && title && destination && date) {
-            // 실제 프로젝트에서는 API 호출로 상세 데이터 가져오기
-            const tripDetailData: TripDetailData = {
-                id: parseInt(id),
-                title: decodeURIComponent(title),
-                destination: decodeURIComponent(destination),
-                date: decodeURIComponent(date),
-                days: getTripDetailDays(parseInt(id)) // ID에 따른 상세 일정 데이터
-            };
-
-            setTripData(tripDetailData);
+        if (id) {
+            fetchTripDetail(parseInt(id));
         } else {
-            console.error('필수 파라미터가 누락되었습니다:', { id, title, destination, date });
+            console.error('여행 ID가 누락되었습니다.');
+            setError('여행 ID가 필요합니다.');
+            setIsLoading(false);
         }
     }, [searchParams]);
 
-    // ID에 따른 상세 일정 데이터 반환 (실제로는 API에서 가져옴)
-    const getTripDetailDays = (tripId: number) => {
+    // 컴포넌트 마운트 시 현재 위치 가져오기
+    useEffect(() => {
+        getCurrentLocation();
+    }, []);
 
-        const tripDetailsMap: { [key: number]: any[] } = {
-            1: [
-                {
-                    day: 1,
-                    items: [
-                        {
-                            id: 1,
-                            type: 'departure',
-                            name: '서울역',
-                            time: '09:00',
-                            lat: 37.555134,
-                            lng: 126.970701
-                        },
-                        {
-                            id: 2,
-                            type: 'place',
-                            name: '리키커피숍',
-                            time: '10:00',
-                            status: '영업 중',
-                            distance: '내 위치에서 143m',
-                            reviews: 859,
-                            image: '/cafe-image.jpg',
-                            description: '주소 전화번호 등 정보 어디까지 넣을 수 있는지용?',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 3,
-                            type: 'place',
-                            name: '덕수궁',
-                            time: '11:00',
-                            lat: 37.5658,
-                            lng: 126.9752
-                        },
-                        {
-                            id: 4,
-                            type: 'place',
-                            name: '경복궁',
-                            time: '12:00',
-                            lat: 37.5796,
-                            lng: 126.9770
-                        },
-                        {
-                            id: 5,
-                            type: 'place',
-                            name: '창덕궁',
-                            time: '13:00',
-                            lat: 37.5796,
-                            lng: 126.9910
-                        },
-                        {
-                            id: 6,
-                            type: 'place',
-                            name: '통인시장',
-                            time: '14:00',
-                            lat: 37.5800,
-                            lng: 126.9700
-                        }
-                    ]
-                },
-                {
-                    day: 2,
-                    items: [
-                        {
-                            id: 7,
-                            type: 'departure',
-                            name: '호텔',
-                            time: '09:00',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 8,
-                            type: 'place',
-                            name: '창덕궁',
-                            time: '10:00',
-                            lat: 37.5796,
-                            lng: 126.9910
-                        },
-                        {
-                            id: 9,
-                            type: 'place',
-                            name: '혜화극장',
-                            time: '14:00',
-                            lat: 37.5850,
-                            lng: 127.0010
-                        }
-                    ]
-                },
-                {
-                    day: 3,
-                    items: [
-                        {
-                            id: 10,
-                            type: 'departure',
-                            name: '출발 호텔',
-                            time: '09:00',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 11,
-                            type: 'place',
-                            name: '남산타워',
-                            time: '10:00',
-                            lat: 37.5512,
-                            lng: 126.9882
-                        }
-                    ]
-                },
-                {
-                    day: 4,
-                    items: [
-                        {
-                            id: 12,
-                            type: 'departure',
-                            name: '출발 호텔',
-                            time: '09:00',
-                            lat: 37.5665,
-                            lng: 126.9780
-                        },
-                        {
-                            id: 13,
-                            type: 'place',
-                            name: '명동',
-                            time: '10:00',
-                            lat: 37.5636,
-                            lng: 126.9826
-                        }
-                    ]
-                }
-            ]
-        };
+    // 거리 계산 함수
+    const calculateItemDistance = (item: any): string => {
+        if (!currentLocation) {
+            return '내 위치에서 143m'; // 기본값
+        }
 
-        const result = tripDetailsMap[tripId] || [];
-        return result;
+        // 백엔드에서 받은 원본 데이터에서 mapX, mapY 사용
+        const placeMapX = item.mapX || item.lng;
+        const placeMapY = item.mapY || item.lat;
+
+        if (!placeMapX || !placeMapY) {
+            return '내 위치에서 143m'; // 기본값
+        }
+
+        try {
+            return calculateDistanceToPlace(
+                currentLocation.lat,
+                currentLocation.lng,
+                placeMapX,
+                placeMapY
+            );
+        } catch (error) {
+            console.warn('거리 계산 실패:', error);
+            return '내 위치에서 143m'; // 기본값
+        }
     };
 
+
     // 로딩 상태 처리
+    if (isLoading) {
+        return (
+            <div className={`${styles.container} w-full h-screen md:pl-[14.25rem] md:pr-[14.1875rem] m-0`}>
+                <div className="flex items-center justify-center h-full">
+                    <div className="text-lg text-gray-600">여행 상세 정보를 불러오는 중...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // 에러 상태 처리
+    if (error) {
+        return (
+            <div className={`${styles.container} w-full h-screen md:pl-[14.25rem] md:pr-[14.1875rem] m-0`}>
+                <div className="flex flex-col items-center justify-center h-full">
+                    <div className="text-lg text-red-600 mb-4">{error}</div>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        style={{ cursor: 'pointer' }}
+                    >
+                        뒤로 가기
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // 데이터가 없는 경우
     if (!tripData) {
         return (
             <div className={`${styles.container} w-full h-screen md:pl-[14.25rem] md:pr-[14.1875rem] m-0`}>
                 <div className="flex items-center justify-center h-full">
-                    <div className="text-lg text-gray-600">로딩 중...</div>
+                    <div className="text-lg text-gray-600">여행 정보를 찾을 수 없습니다.</div>
                 </div>
             </div>
         );
@@ -306,9 +340,6 @@ export default function PastTripDetailPage() {
 
     // 지도 중심점 계산
     const mapCenter = calculateCenter(mapPlaces);
-
-    // 디버깅: 마커 좌표 확인
-    console.log('Map Places:', mapPlaces);
 
     return (
 
@@ -368,49 +399,46 @@ export default function PastTripDetailPage() {
                                 )}
 
                                 <div className={styles.itemContent}>
-                                    {item.type === 'departure' ? (
-                                        <div className={styles.departureItem}>
-                                            <span className={styles.departureLabel}>출발</span>
-                                            <span className={styles.departureName}>{item.name}</span>
+                                    <div className={styles.placeItem}>
+                                        <div className={styles.placeDetails}>
+                                            {item.type === 'departure' && (
+                                                <span className={styles.departureLabel}>출발</span>
+                                            )}
+                                            <h3 className={styles.placeName}>{item.name}</h3>
                                         </div>
-                                    ) : (
-                                        <div className={styles.placeItem}>
-                                            <div className={styles.placeDetails}>
-                                                <h3 className={styles.placeName}>{item.name}</h3>
-                                                {expandedItems.has(item.id) && (
-                                                    <div className={styles.expandedDetails}>
-                                                        <div className={styles.expandedContent}>
-                                                            {expandedItems.has(item.id) && (
-                                                                <div className={styles.placeImage}>
-                                                                    <div className={styles.imagePlaceholder}>
-                                                                        📍
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                            <div className={styles.detailsText}>
-                                                                <div className={styles.statusAndDistance}>
-                                                                    {item.status && (
-                                                                        <div className={styles.statusOnly}>
-                                                                            <span className={styles.status}>{item.status}</span>
-                                                                            {item.time && <span className={styles.time}>{item.time} 까지</span>}
-                                                                        </div>
-                                                                    )}
-                                                                    {item.distance && (
-                                                                        <div className={styles.distance}>{item.distance}</div>
-                                                                    )}
-                                                                </div>
-                                                                <div className={styles.reviewsAndDescription}>
-                                                                    {item.reviews && (
-                                                                        <div className={styles.reviews}>후기 {item.reviews}</div>
-                                                                    )}
-                                                                    {item.description && (
-                                                                        <div className={styles.description}>{item.description}</div>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                    </div>
+
+                                    {/* 출발지와 관광지 모두에 대한 확장된 세부 정보 */}
+                                    {expandedItems.has(item.id) && (
+                                        <div className={styles.expandedDetails}>
+                                            <div className={styles.expandedContent}>
+                                                {item.image && (
+                                                    <div className={styles.placeImage}>
+                                                        <img
+                                                            src={item.image}
+                                                            alt={item.name}
+                                                            className={styles.placeImageContent}
+                                                        />
                                                     </div>
                                                 )}
+                                                <div className={styles.detailsText}>
+                                                    <div className={styles.statusAndDistance}>
+                                                        {item.tel && (
+                                                            <div className={styles.tel}>{item.tel}</div>
+                                                        )}
+                                                        <div className={styles.distance}>
+                                                            내 위치에서 {calculateItemDistance(item)}
+                                                        </div>
+                                                    </div>
+                                                    <div className={styles.reviewsAndDescription}>
+                                                        {item.reviews && (
+                                                            <div className={styles.reviews}>후기 {item.reviews}</div>
+                                                        )}
+                                                        {item.description && (
+                                                            <div className={styles.description}>{item.description}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -459,7 +487,7 @@ export default function PastTripDetailPage() {
                                 image={getMarkerImage(place.type)}
                                 onClick={() => handleMarkerClick(place.id)}
                             />
-                            
+
                             {/* 클릭 시 표시되는 오버레이 */}
                             {clickedMarker === place.id && (
                                 <CustomOverlayMap
@@ -471,17 +499,17 @@ export default function PastTripDetailPage() {
                                             <div className={styles.info}>
                                                 <div className={styles.title}>
                                                     {index + 1}번째 {place.name}
-                                                    <div 
-                                                        className={styles.close} 
+                                                    <div
+                                                        className={styles.close}
                                                         onClick={closeOverlay}
                                                         title="닫기"
                                                     />
                                                 </div>
                                                 <div className={styles.body}>
                                                     <div className={styles.img}>
-                                                        <img 
-                                                            src={place.image || "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png"} 
-                                                            width="73" 
+                                                        <img
+                                                            src={place.image || "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png"}
+                                                            width="73"
                                                             height="70"
                                                             alt={place.name}
                                                         />
@@ -494,9 +522,9 @@ export default function PastTripDetailPage() {
                                                             {place.lat.toFixed(6)}, {place.lng.toFixed(6)}
                                                         </div>
                                                         <div>
-                                                            <a 
+                                                            <a
                                                                 href={`https://map.kakao.com/link/map/${place.name},${place.lat},${place.lng}`}
-                                                                target="_blank" 
+                                                                target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className={styles.link}
                                                             >
