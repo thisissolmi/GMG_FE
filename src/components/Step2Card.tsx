@@ -46,14 +46,14 @@ export default function Step2Card({ onNext, onPrev, tripDays, setTripDays }: Ste
             </div>
 
             <div className={styles.imgContainer}>
-                <Image
+                <img
                     src="/leftArrow.svg"
                     alt="leftArrow"
                     onClick={onPrev}
                     width={24}
                     height={24}
                     />
-                <Image
+                <img
                     src="/rightArrow.svg"
                     alt="arrowRight"
                     onClick={handleNext}

@@ -8,8 +8,7 @@ import {
     calculateCenter,
     convertToMapPlaces,
     getMarkerImage,
-    type Place,
-    type TripItem
+    type Place
 } from "@/utils/mapUtils";
 import { getCurrentPosition, calculateDistanceToPlace } from "@/utils/geolocation";
 
@@ -48,6 +47,25 @@ interface TripDetailResponse {
     }[];
 }
 
+// 여행 아이템 타입 정의
+export interface TripItem {
+    id: number;
+    type: 'departure' | 'place';
+    name: string;
+    time?: string;
+    status?: string;
+    distance?: string;
+    reviews?: number;
+    image?: string;
+    description?: string;
+    tel?: string;
+    lat?: number;
+    lng?: number;
+    mapX?: string;
+    mapY?: string;
+    contentId?: string;
+}
+
 // 여행 상세 데이터 타입 정의
 interface TripDetailData {
     id: number;
@@ -56,22 +74,7 @@ interface TripDetailData {
     date: string;
     days: {
         day: number;
-        items: {
-            id: number;
-            type: 'departure' | 'place';
-            name: string;
-            time?: string;
-            status?: string;
-            distance?: string;
-            reviews?: number;
-            image?: string;
-            description?: string;
-            tel?: string;
-            lat?: number;
-            lng?: number;
-            mapX?: string;
-            mapY?: string;
-        }[];
+        items: TripItem[];
     }[];
 }
 
@@ -267,7 +270,7 @@ export default function PastTripDetailPage() {
     }, []);
 
     // 거리 계산 함수
-    const calculateItemDistance = (item: any): string => {
+    const calculateItemDistance = (item: TripItem): string => {
         if (!currentLocation) {
             return '내 위치에서 143m'; // 기본값
         }

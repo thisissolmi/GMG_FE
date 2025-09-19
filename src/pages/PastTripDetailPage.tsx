@@ -8,9 +8,9 @@ import {
     calculateCenter, 
     convertToMapPlaces, 
     getMarkerImage, 
-    type Place,
-    type TripItem
+    type Place
 } from "@/utils/mapUtils";
+import { type TripItem } from "./UpcomingTripDetailPage";
 import ReviewWriteModal from "@/components/ReviewWriteModal";
 import ReviewViewModal from "@/components/ReviewViewModal";
 import { getCurrentPosition, calculateDistanceToPlace } from "@/utils/geolocation";
@@ -154,7 +154,7 @@ export default function PastTripDetailPage() {
     };
 
     // 거리 계산 함수
-    const calculateItemDistance = (item: any): string => {
+    const calculateItemDistance = (item: TripItem): string => {
         if (!currentLocation) {
             return '내 위치에서 143m'; // 기본값
         }

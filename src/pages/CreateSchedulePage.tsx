@@ -1,6 +1,6 @@
 "use client";
 
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import Step1Card from "@/components/Step1Card";
@@ -9,6 +9,7 @@ import Step3Card from "@/components/Step3Card";
 import styles from "./CreateSchedulePage.module.css";
 
 export default function CreateSchedulePage() {
+    const router = useRouter();
     const [step, setStep] = useState(1);
     const [tripName, setTripName] = useState(""); 
     const [tripDays, setTripDays] = useState("");
@@ -18,10 +19,16 @@ export default function CreateSchedulePage() {
     const handleNextStep = () => {
         if (step < 3) {
             setStep(step + 1);
-        }
-        if (step === 3) {
-            alert("일정 생성이 완료되었습니다!");
-            console.log(tripName, tripDays, tripStyle);
+        } else {
+            // Step 3에서 다음 단계로 넘어갈 때 tripStyle에 따라 라우팅
+            if (tripStyle === 'random') {
+                router.push('/GameMode');
+            } else if (tripStyle === 'select') {
+                router.push('/SelectAreaPage');
+            } else if (tripStyle === 'current') {
+                // 현재 위치로 보기 선택 시 처리 (필요에 따라 다른 페이지로 라우팅)
+                alert('현재 위치 기능은 준비 중입니다.');
+            }
         }
     };
     
@@ -48,7 +55,7 @@ export default function CreateSchedulePage() {
 
     return (
         <div className={styles.container}>
-            <Image
+            <img
                 src="/GMG_LOGO.png"
                 alt="GMG_LOGO"
                 width={193}
