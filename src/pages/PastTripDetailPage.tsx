@@ -8,7 +8,8 @@ import {
     calculateCenter, 
     convertToMapPlaces, 
     getMarkerImage, 
-    type Place 
+    type Place,
+    type TripItem
 } from "@/utils/mapUtils";
 import ReviewWriteModal from "@/components/ReviewWriteModal";
 import ReviewViewModal from "@/components/ReviewViewModal";
@@ -297,7 +298,7 @@ export default function PastTripDetailPage() {
     const currentDayData = tripData.days.find(day => day.day === selectedDay);
 
     // 현재 선택된 날짜의 장소들을 지도용 데이터로 변환
-    const mapPlaces: Place[] = convertToMapPlaces(currentDayData?.items || []);
+    const mapPlaces: Place[] = convertToMapPlaces((currentDayData?.items || []) as TripItem[]);
 
     // 지도 중심점 계산
     const mapCenter = calculateCenter(mapPlaces);

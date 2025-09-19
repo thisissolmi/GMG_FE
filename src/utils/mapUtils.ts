@@ -11,6 +11,17 @@ export interface Place {
     description?: string;
 }
 
+// 여행 아이템의 기본 구조 정의 (타입 안전성을 위한 인터페이스)
+export interface TripItem {
+    id: number;
+    name: string;
+    lat?: number;
+    lng?: number;
+    type?: 'departure' | 'place';
+    image?: string;
+    description?: string;
+}
+
 // 좌표 타입 정의
 export interface Coordinates {
     lat: number;
@@ -73,9 +84,13 @@ export const createSimpleRoutePath = (places: Coordinates[]): Coordinates[] => {
  * @param items 여행 아이템 배열
  * @returns 지도용 장소 배열
  */
-export const convertToMapPlaces = (items: any[]): Place[] => {
+export const convertToMapPlaces = (items: TripItem[]): Place[] => {
     return items
-        .filter(item => item.lat && item.lng)
+        .filter((item): item is TripItem & { lat: number; lng: number; type: 'departure' | 'place' } => 
+            typeof item.lat === 'number' && 
+            typeof item.lng === 'number' && 
+            (item.type === 'departure' || item.type === 'place')
+        )
         .map(item => ({
             id: item.id,
             name: item.name,
